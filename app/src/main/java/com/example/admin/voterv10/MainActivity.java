@@ -74,12 +74,12 @@ public class MainActivity extends AppCompatActivity {
                 }
                 while(true){
                     if(proceed[0]){
-                        Log.d("STATUS","server socket is functionning...");
+                        Log.d("STATUS","server socket is functioning...");
                         try {
                             byte []b = new byte[5];
                             final DatagramPacket dp = new DatagramPacket(b,5);
                             ss[0].receive(dp);
-                            Log.d("Status","socket is createad successfully...");
+                            Log.d("Status","socket is created successfully...");
                             Log.d("Message received", new String(dp.getData(),"UTF-8"));
                             Log.d("IP",dp.getAddress().getHostName());
                             MainActivity.this.runOnUiThread(new Runnable() {
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
                         } catch (IOException e) {
                             e.printStackTrace();
-                            Log.d("STATIS","Listener Socket creation failed...");
+                            Log.d("STATUS","Listener Socket creation failed...");
                         }
                     }
                 }
@@ -102,8 +102,10 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void addServer(String str) {
-        arrayAdapter.add(str);
-        arrayAdapter.notifyDataSetChanged();
+        if(!arrayList.contains(str)) {
+            arrayAdapter.add(str);
+            arrayAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override
