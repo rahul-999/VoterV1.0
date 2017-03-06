@@ -1,5 +1,6 @@
 package com.example.admin.voterv10;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -9,16 +10,14 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayAdapter<String> arrayAdapter;
     ArrayList<String> arrayList;
     ListView lview;
+    Thread thread;
     int flag=0;
 
     @Override
@@ -44,6 +44,24 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+        handleclick();
+    }
+    private void handleclick() {
+        lview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //this handles the server choise and logs the user
+                if(position!=0) {
+                    Intent intent = new Intent(MainActivity.this, Login_Handler.class);
+                    intent.putExtra("server", parent.getItemAtPosition(position).toString());
+                    
+                    startActivity(intent);
+                    //thread.stop() is deprecated,hence temp flag is used
+                    flag=1;
+                    Log.d("pressed",parent.getItemAtPosition(position).toString());
+                }
+            }
+        });
     }
 
     private void initialize() {
@@ -54,18 +72,20 @@ public class MainActivity extends AppCompatActivity {
         lview.setAdapter(arrayAdapter);
         addServer("Servers : ");
         listSevers();
-        Log.d("Status","after call");
+        //Log.d("Status","after call");
     }
+
+
 
     private void listSevers() {
         final boolean[] proceed = {false};
 
         final DatagramSocket[] ss = {null};
-        Thread thread= new Thread(new Runnable() {
+        thread= new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    Log.d("Socket","creating server socket...");
+                    //Log.d("Socket","creating server socket...");
                     ss[0] = new DatagramSocket(2566);
                     proceed[0] =true;
                 } catch (IOException e) {
@@ -73,13 +93,18 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("Failiure","ServerSocket creation failed...");
                 }
                 while(true){
+                    if(flag==1){
+                        ss.clone();
+                        break;
+                    }
                     if(proceed[0]){
-                        Log.d("STATUS","server socket is functioning...");
+                        //Log.d("STATUS","server socket is functioning...");
                         try {
                             byte []b = new byte[5];
                             final DatagramPacket dp = new DatagramPacket(b,5);
                             ss[0].receive(dp);
-                            Log.d("Status","socket is created successfully...");
+                            //Log.d("Status","socket is created successfully...");
+                            //WTF, just try commenting below tow lines, it gives error
                             Log.d("Message received", new String(dp.getData(),"UTF-8"));
                             Log.d("IP",dp.getAddress().getHostName());
                             MainActivity.this.runOnUiThread(new Runnable() {
@@ -91,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
                         } catch (IOException e) {
                             e.printStackTrace();
-                            Log.d("STATUS","Listener Socket creation failed...");
+                            //Log.d("STATUS","Listener Socket creation failed...");
                         }
                     }
                 }
@@ -100,6 +125,12 @@ public class MainActivity extends AppCompatActivity {
         thread.start();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        this.finish();
+
+    }
 
     private void addServer(String str) {
         if(!arrayList.contains(str)) {
