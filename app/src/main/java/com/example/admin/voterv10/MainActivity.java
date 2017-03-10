@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
                 if(position!=0) {
                     Intent intent = new Intent(MainActivity.this, Login_Handler.class);
                     intent.putExtra("server", parent.getItemAtPosition(position).toString());
-                    
+
                     startActivity(intent);
                     //thread.stop() is deprecated,hence temp flag is used
                     flag=1;
