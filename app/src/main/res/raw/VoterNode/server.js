@@ -12,7 +12,7 @@ manager();
 
 server.bind(function(){
 	server.setBroadcast(true);
-	var timer = setInterval(sendemessage,3000);
+	var timer = setInterval(sendemessage,1000);
 });
 server.on('error',function(){
 	console.log("Can't send broadcast, Something went wrong...");

@@ -17,9 +17,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.Socket;
 import java.net.URL;
-import java.util.List;
 
 /**
  * Created by ADMIN on 3/6/2017.
@@ -49,15 +47,11 @@ public class Login_Handler extends AppCompatActivity{
                     public void run() {
                         Log.d("Connection","trying for connection");
                         try {
-                            //creating a request object
-                            //HttpURLConnection con = (HttpURLConnection)(new URL(server+":5657/login")).openConnection();
+
                             HttpURLConnection con = (HttpURLConnection)(new URL("http://"+server+":5657/login")).openConnection();
                             con.setRequestMethod("POST");
-                            //con.setRequestMethod("GET");
-                            Log.d("Connection","waiting...");
+
                             con.connect();      //connection established...
-                            Log.d("Connection","connection established...");
-                            //proceed to writing json data as a string which server automaticallyl converts to json object
                             String json;
                             json=null;
                             json = "{ \"email\":\""+user.getText()+"\",\"password\":\""+pass.getText()+"\" }";
@@ -76,12 +70,18 @@ public class Login_Handler extends AppCompatActivity{
                             if(buffer!=null)
                                 Log.d("JSON", String.valueOf(buffer));
                             final JSONObject jsn = new JSONObject(String.valueOf(buffer));
-                            Log.d("json",jsn.toString());
+                            //Log.d("json",jsn.toString());
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     try {
                                         if(jsn.getBoolean("status")){
+                                            Intent intent = new Intent(Login_Handler.this,HandleVoting.class);
+                                            intent.putExtra("server",server);
+                                            intent.putExtra("username",String.valueOf(user.getText()));
+                                            Log.d("username", String.valueOf(user.getText()));
+                                            intent.putExtra("password",String.valueOf(pass.getText()));
+                                            startActivity(intent);
                                             Toast.makeText(Login_Handler.this,"Login Successfull",Toast.LENGTH_LONG).show();
                                         }else{
                                             Toast.makeText(Login_Handler.this,"Login Failed, try again ...",Toast.LENGTH_LONG).show();

@@ -14,6 +14,42 @@ db.connect(conn,function(err,dbdata){
 		dbdata.close();
 	});
 
+	app.post('/voter',function(req,res){
+		console.log("post request");
+		var mdata;
+		console.log("Got post request.....");
+		req.on('data',function(chunk){
+			mdata+=chunk;
+			console.log("read data ....");
+			mdata = mdata.substring(9,mdata.length);
+			var json = JSON.parse(mdata);
+			console.log(json);
+			res.end();
+			dbdata.collection('Candidate').find({name:json.selection}).toArray(function(err,dat){
+				for(var i=0;i<dat.length;i++){
+					console.log(dat[i].name);
+				}
+				var count = dat[0].voteCount;
+				console.log(count);
+				count++;
+				dbdata.collection('Candidate').update({name:dat[0].name},{$set :{ voteCount:count }});
+				console.log("update successful...");
+			});
+
+		});
+		res.send("hello");
+	});
+
+
+	app.get('/vote',function(req,res){
+		//console.log("vote get request.....")
+		var str;
+		dbdata.collection('Candidate').find({},{},{}).toArray(function(err,doc){
+			res.send(doc);
+		});
+	});
+
+	//Handles login for user
 	var resData='';
 	app.post('/login',function(req,res){
 		//res.send("321");
@@ -21,7 +57,7 @@ db.connect(conn,function(err,dbdata){
 		req.on('data',function(chunk){
 			//collects the data returned from user
 			resData+=chunk;
-			console.log("-"+chunk);
+			//console.log("-"+chunk);
 			var myData = JSON.parse(resData);
 			resData='';
 			console.log(myData.email);
