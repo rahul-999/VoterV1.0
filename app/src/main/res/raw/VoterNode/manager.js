@@ -32,7 +32,7 @@ db.connect(conn,function(err,dbdata){
 				var count = dat[0].voteCount;
 				console.log(count);
 				count++;
-				dbdata.collection('Candidate').update({name:dat[0].name},{$set :{ voteCount:count }});
+				dbdata.collection('Candidate').update({name:dat[0].name},{$set :{ voteCount:count, voted:true }});
 				console.log("update successful...");
 			});
 

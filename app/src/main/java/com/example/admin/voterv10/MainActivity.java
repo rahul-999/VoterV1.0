@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                             MainActivity.this.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    addServer(dp.getAddress().getHostName());
+                                    addServer(dp.getAddress().getHostAddress());
                                 }
                             });
 
